@@ -29,8 +29,7 @@ Promise('do something').$fulfill('the promise has been successfully fulfilled. w
 ```javascript
 
 //very simple ajax request function
-
-function ajax(url){
+function ajax_get(url){
   //create a promise with the url as an id
   var promise = Promise(url);
   var xhr = new XMLHttpRequest();
@@ -51,9 +50,9 @@ function ajax(url){
 //using Promise to fetch resources.
 
 Promise.when('resources', [
-  ajax.get('url/lang-en.json'),
-  ajax.get('url/table.json'),
-  ajax.get('url/template.html')
+  ajax_get('url/lang-en.json'),
+  ajax_get('url/table.json'),
+  ajax_get('url/template.html')
 ]);
 
 
