@@ -50,17 +50,67 @@ function ajax_get(url){
 //using Promise to fetch resources.
 
 Promise.when('resources', [
+  ajax_get('url/data.json'),
   ajax_get('url/lang-en.json'),
-  ajax_get('url/table.json'),
   ajax_get('url/template.html')
 ]);
 
 
 /// somewhere else in the code...
 
-Promise('resources').done(function(lang, table, template){
+Promise('resources').done(function(data, lang, template){
   ...
 }).fail(function(error){
+  ...
+});
+
+
+```
+
+##the same resources example but different
+
+```javascript
+
+function ajax_get(url){
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.onload = function(e){
+    Promise(url).$fulfill(xhr.responseText);
+  }    
+  xhr.error = function(e){
+    Promise(url).$break(e);
+  }
+  xhr.send();  
+}
+
+//dummy render non blocking ui function
+function renderNonBlocking(data, lang, template){
+  var renderPromise = Promise();
+  setTimeout(function(){
+    renderPromise.$fulfill('done after 1s')
+  },1000);
+  return renderPromise; 
+}
+
+ajax_get('url/data.json');
+ajax_get('url/lang-en.json');
+ajax_get('url/template.html');
+ajax_get('url/hugeFile.json');
+
+
+Promise.when('resources', [
+  Promise('url/data.json'),
+  Promise('url/lang-en.json'),
+  Promise('url/template.html')
+]).then(function(data, lang, template){
+  return renderNonBlocking(data, lang, template);
+}).done(function(msg){
+  // 'done after 1s'
+});
+
+
+//get the data any time you want!
+Promise('url/data.json').always(function(value){
   ...
 });
 
