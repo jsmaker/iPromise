@@ -102,10 +102,10 @@ Promise.when('resources', [
   Promise('url/data.json'),
   Promise('url/lang-en.json'),
   Promise('url/template.html')
-]).then(function(data, lang, template){
+]).done(function(data, lang, template){
   return renderNonBlocking(data, lang, template);
 }).done(function(msg){
-  // 'done after 1s'
+  console.log(msg) // 'done after 1s'
 });
 
 
