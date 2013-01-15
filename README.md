@@ -1,7 +1,7 @@
 iPromise
 ========
 
-#small powerful and no dependencies promises
+#Small powerful and no dependencies promises
 
 ```javascript
 
@@ -24,7 +24,7 @@ Promise('do something').$fulfill('the promise has been successfully fulfilled. w
 
 ```
 
-##ajax demo
+##Promising fetch resources with ajax demo.
 
 ```javascript
 
