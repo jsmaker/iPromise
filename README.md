@@ -111,6 +111,7 @@ Promise.when('resources', [
 
 //get the data any time you want!
 Promise('url/data.json').always(function(value){
+  if(value && value.status === 'breaked'){...}
   ...
 });
 
