@@ -43,7 +43,7 @@ function ajax_get(url){
      promise.$break(e);
   }
   xhr.send();
-  //in this library you dont have to return your promises you can reffer to them by ther 
+  //in this library you dont have to return your promises you can reffer to them by their id`s 
   return promise;
 }
 
