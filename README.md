@@ -24,10 +24,30 @@ Promise('do something').$fulfill('the promise has been successfully fulfilled. w
 
 ```
 
+##Things to know before you start.
+```javascript
+  //create a new promise factory
+  var PromiseA = IPromise();
+  var PromiseB = IPromise();
+  
+  //promise can have an id.
+  //when you call the promise constructor with a string it will return the same promise.
+  PromiseA('my promise') === PromiseA('my promise') // true
+  
+  //promises don't share the same namespace.
+  PromiseA('my promise') === PromiseB('my promise') // false
+  
+  //if you don't pass an id a new promise will be created each time.
+  PromiseA() === PromiseA() // false
+
+```
+
+
 ##Promising fetch resources with ajax demo.
 
 ```javascript
-
+var Promise = IPromise();
+  
 //very simple ajax request function
 function ajax_get(url){
   //create a promise with the url as an id
@@ -70,6 +90,8 @@ Promise('resources').done(function(data, lang, template){
 ##the same resources example but different
 
 ```javascript
+
+var Promise = IPromise();
 
 function ajax_get(url){
   var xhr = new XMLHttpRequest();
