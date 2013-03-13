@@ -111,11 +111,15 @@ describe('Promise', function() {
         });
 
         it('should hold the id of the promise', function() {
-            expect(Promise('ID')._id).toBe('ID');
+            expect(Promise('ID').id).toBe('ID');
+        });
+
+        it('should return a new promise object', function() {
+            expect(Promise().type).toBe('Promise');
         });
 
         it('should hold anonymous id if called with no id', function() {
-            expect(Promise()._id).toBe('anonymous');
+            expect(Promise().id).toBe('anonymous');
         });
 
         it('should reurn new promise if called with no id', function() {
@@ -220,7 +224,7 @@ describe('Promise', function() {
         async.it('should break with the promise error object #fail', function(done) {
 
             Promise('TEST').fail(function(value){
-                expect(value.status).toBe('breaked');
+                expect(value.status).toBe('broken');
                 expect(value.data).toBe('TEST VALUE A');
                 done();
             });
@@ -235,7 +239,7 @@ describe('Promise', function() {
                 expect(false).toBe(true);
                 done();
             },function(value){
-                expect(value.status).toBe('breaked');
+                expect(value.status).toBe('broken');
                 expect(value.data).toBe('TEST VALUE A');
                 done();
             });
@@ -247,7 +251,7 @@ describe('Promise', function() {
         async.it('should break with the promise error object #always', function(done) {
 
             Promise('TEST').always(function(value){
-                expect(value.status).toBe('breaked');
+                expect(value.status).toBe('broken');
                 expect(value.data).toBe('TEST VALUE A');
                 done();
             });
@@ -255,7 +259,7 @@ describe('Promise', function() {
             Promise('TEST').$break('TEST VALUE A');
         });
 
-        it('should report status with breaked', function() {
+        it('should report status with broken', function() {
 
             var value = Valuable(false);
 
@@ -269,7 +273,7 @@ describe('Promise', function() {
 
             runs(function() {
                 expect(status1).toBe('waiting');
-                expect(status2).toBe('breaked');
+                expect(status2).toBe('broken');
             });
         });
 
@@ -299,10 +303,10 @@ describe('Promise', function() {
 
             waitsFor(value.get);
 
-            Promise('TEST').setTimeout(0, 'Time is out!');
+            Promise('TEST').timeout(0, 'Time is out!');
 
             runs(function() {
-                expect(value().status).toBe('breaked');
+                expect(value().status).toBe('broken');
                 expect(value().data).toBe('Time is out!');
             });
         });
@@ -353,7 +357,7 @@ describe('Promise', function() {
             runs(function() {
                 expect(values.length).toEqual(4);
                 values.forEach(function(err){
-                    expect(err.status).toBe('breaked');
+                    expect(err.status).toBe('broken');
                     expect(err.data).toBe('TEST VALUE A');
                 });
             });
@@ -415,9 +419,9 @@ describe('Promise.when', function() {
     async.it('should break with only one promise breaks', function(done) {
 
         Promise.when('AB', [promiseA]).always(function(value){
-            expect(value.status).toBe('breaked');
+            expect(value.status).toBe('broken');
             expect(value.data[0].data).toBe('TEST VALUE A');
-            expect(value.data[0].status).toBe('breaked');
+            expect(value.data[0].status).toBe('broken');
             done();
         });
 
@@ -430,7 +434,7 @@ describe('Promise.when', function() {
         promiseB.$fulfill('TEST VALUE B');
 
         Promise.when('AB', [promiseA, promiseB]).always(function(value){
-            expect(value.status).toBe('breaked');
+            expect(value.status).toBe('broken');
             done();
         });
 
@@ -439,9 +443,9 @@ describe('Promise.when', function() {
     async.it('should break if one of the promises breaks #2', function(done) {
 
         Promise.when('AB', [promiseA, promiseB]).always(function(value){
-            expect(value.status).toBe('breaked');
+            expect(value.status).toBe('broken');
             expect(value.data[0]).toBe('TEST VALUE A');
-            expect(value.data[1].status).toBe('breaked');
+            expect(value.data[1].status).toBe('broken');
             expect(value.data[1].data).toBe('TEST VALUE B');
             done();
         });

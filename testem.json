@@ -1,7 +1,7 @@
 {
     "framework": "jasmine",
     "src_files":[
-        "Promise.js",
+        "IPromise.js",
         "tests/JasmineAsync.js",
         "tests/*Spec.js"
     ]
