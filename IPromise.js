@@ -7,22 +7,22 @@ function IPromise() {
             return Promise.instances[id];
         }
 
-        var waiting = {status: 'waiting'};
-        var error = {status: 'broken'};
-        var future_value = waiting;
+        var pendeing = {status: 'pendeing'};
+        var error = {status: 'rejected'};
+        var future_value = pendeing;
         var done = [];
         var broke = [];
         var promise;
 
-        function setStatus(is_fulfilled, newValue) {
-            if (future_value !== waiting) { return promise; }
-            if (is_fulfilled) {
+        function setStatus(is_resolved, newValue) {
+            if (future_value !== pendeing) { return promise; }
+            if (is_resolved) {
                 future_value = newValue;
             } else {
                 error.data = newValue;
                 future_value = error;
             }
-            return invoke(is_fulfilled ? done : broke);
+            return invoke(is_resolved ? done : broke);
         }
 
         function callToFutureValue(callTo, ctx) {
@@ -73,32 +73,32 @@ function IPromise() {
             type: 'Promise',
             id: id ? id.toString() : 'anonymous',
             status: function () {
-                if (future_value === waiting) { return 'waiting'; }
-                if (future_value === error) { return 'broken'; }
-                return 'fulfilled';
+                if (future_value === pendeing) { return 'pendeing'; }
+                if (future_value === error) { return 'rejected'; }
+                return 'resolved';
             },
             then: function (sxs, fail, context) {
                 if(sxs) {done.push([sxs, context]);}
                 if(fail) {broke.push([fail, context]);}
-                if (promise.status() === 'waiting') { return promise;}
-                return invoke(promise.status() === 'broken' ? broke : done);
+                if (promise.status() === 'pendeing') { return promise;}
+                return invoke(promise.status() === 'rejected' ? broke : done);
             },
             fail: function (fail, context) { return promise.then(null, fail, context); },
             done: function (sxs, context) { return promise.then(sxs, null, context); },
             always: function (always, context) { return promise.then(always, always, context); },
             timeout: function (time, errorData) {
-                setTimeout(promise.$break.$with(errorData), time);
+                setTimeout(promise.reject.$with(errorData), time);
                 return promise;
             }
         };
 
-        promise.$fulfill = setStatus.bind(promise, true);
-        promise.$break = setStatus.bind(promise, false);
-        promise.$fulfill.$with = function (value) {
-            return promise.$fulfill.bind(null, value);
+        promise.resolve = setStatus.bind(promise, true);
+        promise.reject = setStatus.bind(promise, false);
+        promise.resolve.$with = function (value) {
+            return promise.resolve.bind(null, value);
         };
-        promise.$break.$with = function (value) {
-            return promise.$break.bind(null, value);
+        promise.reject.$with = function (value) {
+            return promise.reject.bind(null, value);
         };
 
         return Promise.store(id, promise);
@@ -120,15 +120,15 @@ function IPromise() {
         var i;
         var whenPromise = Promise(id, context);
         if (!promises.length) {
-            return whenPromise.$fulfill(values);
+            return whenPromise.resolve(values);
         }
         var advanceWhenState = function (promise, value) {
-            if (promise.status() === 'broken') {
+            if (promise.status() === 'rejected') {
                 was_error = true;
             }
             values.push(value);
             if (promises.length === values.length) {
-                return was_error ? whenPromise.$break(values) : whenPromise.$fulfill(values);
+                return was_error ? whenPromise.reject(values) : whenPromise.resolve(values);
             }
             return undefined;
         };

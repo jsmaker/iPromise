@@ -181,23 +181,23 @@ describe('Promise', function() {
                 setTimeout(done, 10);
             });
 
-            Promise('TEST').$fulfill('TEST VALUE A');
-            Promise('TEST').$break('TEST VALUE A');
+            Promise('TEST').resolve('TEST VALUE A');
+            Promise('TEST').reject('TEST VALUE A');
 
         });
 
-        async.it('should fulfilled with the value passed to the $fulfill #done', function(done) {
+        async.it('should resolved with the value passed to the resolve #done', function(done) {
 
             Promise('TEST').done(function(value){
                 expect(value).toBe('TEST VALUE A');
                 done();
             });
 
-            Promise('TEST').$fulfill('TEST VALUE A');
+            Promise('TEST').resolve('TEST VALUE A');
 
         });
 
-        async.it('should fulfilled with the value passed to the $fulfill #then', function(done) {
+        async.it('should resolved with the value passed to the resolve #then', function(done) {
 
             Promise('TEST').then(function(value){
                 expect(value).toBe('TEST VALUE A');
@@ -207,29 +207,29 @@ describe('Promise', function() {
                 done();
             });
 
-            Promise('TEST').$fulfill('TEST VALUE A');
+            Promise('TEST').resolve('TEST VALUE A');
 
         });
 
-        async.it('should fulfilled with the value passed to the $fulfill #always', function(done) {
+        async.it('should resolved with the value passed to the resolve #always', function(done) {
 
             Promise('TEST').always(function(value){
                 expect(value).toBe('TEST VALUE A');
                 done();
             });
 
-            Promise('TEST').$fulfill('TEST VALUE A');
+            Promise('TEST').resolve('TEST VALUE A');
         });
 
         async.it('should break with the promise error object #fail', function(done) {
 
             Promise('TEST').fail(function(value){
-                expect(value.status).toBe('broken');
+                expect(value.status).toBe('rejected');
                 expect(value.data).toBe('TEST VALUE A');
                 done();
             });
 
-            Promise('TEST').$break('TEST VALUE A');
+            Promise('TEST').reject('TEST VALUE A');
 
         });
 
@@ -239,27 +239,27 @@ describe('Promise', function() {
                 expect(false).toBe(true);
                 done();
             },function(value){
-                expect(value.status).toBe('broken');
+                expect(value.status).toBe('rejected');
                 expect(value.data).toBe('TEST VALUE A');
                 done();
             });
 
-            Promise('TEST').$break('TEST VALUE A');
+            Promise('TEST').reject('TEST VALUE A');
 
         });
 
         async.it('should break with the promise error object #always', function(done) {
 
             Promise('TEST').always(function(value){
-                expect(value.status).toBe('broken');
+                expect(value.status).toBe('rejected');
                 expect(value.data).toBe('TEST VALUE A');
                 done();
             });
 
-            Promise('TEST').$break('TEST VALUE A');
+            Promise('TEST').reject('TEST VALUE A');
         });
 
-        it('should report status with broken', function() {
+        it('should report status with rejected', function() {
 
             var value = Valuable(false);
 
@@ -268,16 +268,16 @@ describe('Promise', function() {
             waitsFor(value.get);
 
             var status1 = Promise('TEST').status();
-            Promise('TEST').$break('TEST VALUE A');
+            Promise('TEST').reject('TEST VALUE A');
             var status2 = Promise('TEST').status();
 
             runs(function() {
-                expect(status1).toBe('waiting');
-                expect(status2).toBe('broken');
+                expect(status1).toBe('pendeing');
+                expect(status2).toBe('rejected');
             });
         });
 
-        it('should report status with fulfilled', function() {
+        it('should report status with resolved', function() {
 
             var value = Valuable(false);
 
@@ -286,12 +286,12 @@ describe('Promise', function() {
             waitsFor(value.get);
 
             var status1 = Promise('TEST').status();
-            Promise('TEST').$fulfill('TEST VALUE A');
+            Promise('TEST').resolve('TEST VALUE A');
             var status2 = Promise('TEST').status();
 
             runs(function() {
-                expect(status1).toBe('waiting');
-                expect(status2).toBe('fulfilled');
+                expect(status1).toBe('pendeing');
+                expect(status2).toBe('resolved');
             });
         });
 
@@ -306,7 +306,7 @@ describe('Promise', function() {
             Promise('TEST').timeout(0, 'Time is out!');
 
             runs(function() {
-                expect(value().status).toBe('broken');
+                expect(value().status).toBe('rejected');
                 expect(value().data).toBe('Time is out!');
             });
         });
@@ -325,7 +325,7 @@ describe('Promise', function() {
                 return values.length === 4;
             }, 'all callbacks to be called');
 
-            Promise('TEST').$fulfill('TEST VALUE A');
+            Promise('TEST').resolve('TEST VALUE A');
 
             Promise('TEST').done(counter);
 
@@ -350,14 +350,14 @@ describe('Promise', function() {
                 return values.length === 4;
             }, 'all callbacks to be called');
 
-            Promise('TEST').$break('TEST VALUE A');
+            Promise('TEST').reject('TEST VALUE A');
 
             Promise('TEST').fail(counter);
 
             runs(function() {
                 expect(values.length).toEqual(4);
                 values.forEach(function(err){
-                    expect(err.status).toBe('broken');
+                    expect(err.status).toBe('rejected');
                     expect(err.data).toBe('TEST VALUE A');
                 });
             });
@@ -392,7 +392,7 @@ describe('Promise.when', function() {
         expect(promise.constructor).toBe(Promise);
     });
 
-    async.it('should be fulfilled with array of the promises values', function(done) {
+    async.it('should be resolved with array of the promises values', function(done) {
 
         Promise.when('AB', [promiseA, promiseB]).always(function(valueA, valueB){
             expect(valueA).toBe('TEST VALUE A');
@@ -400,41 +400,41 @@ describe('Promise.when', function() {
             done();
         });
 
-        promiseA.$fulfill('TEST VALUE A');
-        promiseB.$fulfill('TEST VALUE B');
+        promiseA.resolve('TEST VALUE A');
+        promiseB.resolve('TEST VALUE B');
 
     });
 
-    async.it('should fulfill with only one promise fulfilled', function(done) {
+    async.it('should fulfill with only one promise resolved', function(done) {
 
         Promise.when('AB', [promiseA]).always(function(value){
             expect(value).toBe('TEST VALUE A');
             done();
         });
 
-        promiseA.$fulfill('TEST VALUE A');
+        promiseA.resolve('TEST VALUE A');
 
     });
 
     async.it('should break with only one promise breaks', function(done) {
 
         Promise.when('AB', [promiseA]).always(function(value){
-            expect(value.status).toBe('broken');
+            expect(value.status).toBe('rejected');
             expect(value.data[0].data).toBe('TEST VALUE A');
-            expect(value.data[0].status).toBe('broken');
+            expect(value.data[0].status).toBe('rejected');
             done();
         });
 
-        promiseA.$break('TEST VALUE A');
+        promiseA.reject('TEST VALUE A');
 
     });
 
     async.it('should break if one of the promises breaks #1', function(done) {
-        promiseA.$break('TEST VALUE A');
-        promiseB.$fulfill('TEST VALUE B');
+        promiseA.reject('TEST VALUE A');
+        promiseB.resolve('TEST VALUE B');
 
         Promise.when('AB', [promiseA, promiseB]).always(function(value){
-            expect(value.status).toBe('broken');
+            expect(value.status).toBe('rejected');
             done();
         });
 
@@ -443,15 +443,15 @@ describe('Promise.when', function() {
     async.it('should break if one of the promises breaks #2', function(done) {
 
         Promise.when('AB', [promiseA, promiseB]).always(function(value){
-            expect(value.status).toBe('broken');
+            expect(value.status).toBe('rejected');
             expect(value.data[0]).toBe('TEST VALUE A');
-            expect(value.data[1].status).toBe('broken');
+            expect(value.data[1].status).toBe('rejected');
             expect(value.data[1].data).toBe('TEST VALUE B');
             done();
         });
 
-        promiseA.$fulfill('TEST VALUE A');
-        promiseB.$break('TEST VALUE B');
+        promiseA.resolve('TEST VALUE A');
+        promiseB.reject('TEST VALUE B');
 
     });
 
@@ -460,11 +460,11 @@ describe('Promise.when', function() {
 
 describe('Useability Tests', function(){
 
-  describe('$fulfill.$with', function(){
+  describe('resolve.$with', function(){
 
     var async = new AsyncSpec();
 
-    async.it('should be fulfilled with the value passed to the $with function', function(done){
+    async.it('should be resolved with the value passed to the $with function', function(done){
         var Promise = IPromise();
 
         Promise.when(
@@ -479,8 +479,8 @@ describe('Useability Tests', function(){
             });
 
 
-        setTimeout(Promise('to write more tests').$fulfill.$with('done to write 5 tests'), 10);
-        setTimeout(Promise('to write even more tests').$fulfill.$with('done to write more 15 tests'), 20);
+        setTimeout(Promise('to write more tests').resolve.$with('done to write 5 tests'), 10);
+        setTimeout(Promise('to write even more tests').resolve.$with('done to write more 15 tests'), 20);
 
     });
 
@@ -495,7 +495,7 @@ describe('Useability Tests', function(){
 
         var Promise = IPromise();
 
-        Promise('A').$fulfill('TEST VALUE');
+        Promise('A').resolve('TEST VALUE');
 
         Promise('A').done(function(value){
 
@@ -531,19 +531,19 @@ describe('Useability Tests', function(){
 
             expect(value).toBe('TEST VALUE & VALUE OF B & VALUE OF C');
 
-            return 'You are waiting for: ' + value;
+            return 'You are pendeing for: ' + value;
 
         });
 
-        setTimeout(Promise('B').$fulfill.$with('VALUE OF B'), 10);
-        setTimeout(Promise('C').$fulfill.$with('VALUE OF C'), 20);
+        setTimeout(Promise('B').resolve.$with('VALUE OF B'), 10);
+        setTimeout(Promise('C').resolve.$with('VALUE OF C'), 20);
 
         Promise('A').done(function(value){
-            expect(value).toBe('You are waiting for: TEST VALUE & VALUE OF B & VALUE OF C');
+            expect(value).toBe('You are pendeing for: TEST VALUE & VALUE OF B & VALUE OF C');
             done();
         });
 
-        expect(Promise('A').status()).toBe('fulfilled');
+        expect(Promise('A').status()).toBe('resolved');
 
     });
 
