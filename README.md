@@ -15,12 +15,12 @@ Promise('do something').done(function(){
   ...
 }).always(function(value){
   ...
-}).setTimeout(1000, 'the promise has been breaked.');
+}).setTimeout(1000, 'the promise has been rejected.');
 
 
 /// somewhere else in the code...
 ///since we gave the Promise an id we can get it any where.
-Promise('do something').$fulfill('the promise has been successfully fulfilled. we are done!');
+Promise('do something').resolve('the promise has been successfully resolved. we are done!');
 
 ```
 
@@ -56,11 +56,11 @@ function ajax_get(url){
   xhr.open('GET', url, true);
   xhr.onload = function(e){
     //fulfill the promise with the data
-    promise.$fulfill(xhr.responseText);
+    promise.resolve(xhr.responseText);
   }    
   xhr.error = function(e){
      //break the promise with the error
-     promise.$break(e);
+     promise.reject(e);
   }
   xhr.send();
   //in this library you dont have to return your promises you can reffer to them by their id`s 
@@ -97,10 +97,10 @@ function ajax_get(url){
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onload = function(e){
-    Promise(url).$fulfill(xhr.responseText);
+    Promise(url).resolve(xhr.responseText);
   }    
   xhr.error = function(e){
-    Promise(url).$break(e);
+    Promise(url).reject(e);
   }
   xhr.send();  
 }
@@ -109,7 +109,7 @@ function ajax_get(url){
 function renderNonBlocking(data, lang, template){
   var renderPromise = Promise();
   setTimeout(function(){
-    renderPromise.$fulfill('done after 1s')
+    renderPromise.resolve('done after 1s')
   },1000);
   return renderPromise; 
 }
@@ -133,7 +133,7 @@ Promise.when('resources', [
 
 //get the data any time you want!
 Promise('url/data.json').always(function(value){
-  if(value && value.status === 'breaked'){...}
+  if(value && value.status === 'rejected'){...}
   ...
 });
 
